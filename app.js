@@ -376,6 +376,11 @@
   function openScanModal() {
     els.scanModal.classList.remove("hidden");
     document.body.style.overflow = "hidden";
+    const secure = "isSecureContext" in window ? window.isSecureContext : false;
+    if (!secure) {
+      els.scanHint.textContent = "Necesitas abrir esto en HTTPS (no file://) para usar la camara.";
+      return;
+    }
     els.scanHint.textContent =
       "BarcodeDetector " + ("BarcodeDetector" in window ? "disponible" : "no disponible en este navegador") + ".";
   }
@@ -436,12 +441,20 @@
   }
 
   async function startScan() {
+    const secure = "isSecureContext" in window ? window.isSecureContext : false;
+    if (!secure) {
+      els.scanHint.textContent = "La camara solo funciona en HTTPS (o localhost).";
+      showToast("Abre la app en HTTPS para usar camara");
+      return;
+    }
     if (!("mediaDevices" in navigator) || !navigator.mediaDevices.getUserMedia) {
       showToast("Camara no disponible");
       return;
     }
     if (!("BarcodeDetector" in window)) {
-      showToast("Este navegador no soporta escaneo nativo. Usa codigo manual.");
+      els.scanHint.textContent = "Tu navegador no soporta escaneo nativo aqui. Usa codigo manual.";
+      showToast("Usa codigo manual (sin soporte de escaneo)");
+      els.manualBarcode.focus();
       return;
     }
 
@@ -460,7 +473,8 @@
       els.scanVideo.srcObject = scanStream;
       await els.scanVideo.play();
     } catch {
-      showToast("Permiso de camara denegado");
+      els.scanHint.textContent = "No se pudo abrir la camara. Revisa permisos del navegador.";
+      showToast("No se pudo abrir camara");
       return;
     }
 
@@ -677,10 +691,10 @@
     openModal("add");
   });
 
-  const openScanFromAnywhere = async () => {
+  const openScanFromAnywhere = () => {
     openScanModal();
     // Try to start immediately (still requires browser permission).
-    await startScan();
+    startScan();
   };
   els.openScan.addEventListener("click", openScanFromAnywhere);
   els.scanInCart.addEventListener("click", openScanFromAnywhere);
