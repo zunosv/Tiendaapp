@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Tienda | Precios</title>
+
+    <script>
+      // Apply theme early to avoid a flash.
+      (function () {
+        try {
+          var saved = localStorage.getItem("sp_theme");
+          var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+          var useDark = saved ? saved === "dark" : prefersDark;
+          if (useDark) document.documentElement.classList.add("dark");
+        } catch (e) {
+          // Ignore.
+        }
+      })();
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            boxShadow: {
+              soft: "0 12px 30px -18px rgba(0,0,0,.35)",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      /* Futuristic motion: subtle, mobile-friendly, accessible */
+      .fx-wrap {
+        position: relative;
+      }
+
+      /* Background layers */
+      .fx-bg {
+        position: fixed;
+        inset: 0;
+        z-index: -10;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .fx-aurora {
+        position: absolute;
+        inset: -20%;
+        background:
+          radial-gradient(40% 30% at 20% 20%, rgba(56, 189, 248, 0.20), transparent 60%),
+          radial-gradient(35% 30% at 75% 30%, rgba(167, 139, 250, 0.18), transparent 60%),
+          radial-gradient(35% 30% at 60% 80%, rgba(34, 211, 238, 0.14), transparent 60%);
+        filter: blur(18px);
+        transform: translateZ(0);
+        animation: fxFloat 10s ease-in-out infinite;
+      }
+
+      .fx-grid {
+        position: absolute;
+        inset: 0;
+        opacity: 0.55;
+        background:
+          repeating-linear-gradient(90deg, rgba(148, 163, 184, 0.16) 0 1px, transparent 1px 26px),
+          repeating-linear-gradient(180deg, rgba(148, 163, 184, 0.12) 0 1px, transparent 1px 26px);
+        mask-image: radial-gradient(60% 55% at 50% 30%, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+        animation: fxGrid 14s linear infinite;
+      }
+
+      .fx-scan {
+        position: absolute;
+        inset: 0;
+        opacity: 0.10;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          rgba(56, 189, 248, 0.25),
+          transparent
+        );
+        transform: translateY(-30%);
+        animation: fxScan 5.8s ease-in-out infinite;
+      }
+
+      /* Entrance */
+      .fx-in {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      .sp_loaded .fx-in {
+        animation: fxRise 520ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+      }
+
+      .fx-card {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      .sp_loaded .fx-card {
+        animation: fxCardIn 520ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+      }
+
+      @keyframes fxRise {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+          filter: blur(4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+          filter: blur(0);
+        }
+      }
+
+      @keyframes fxCardIn {
+        from {
+          opacity: 0;
+          transform: translateY(14px) scale(0.99);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes fxFloat {
+        0% {
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+        50% {
+          transform: translate3d(-1.5%, 1.5%, 0) scale(1.02);
+        }
+        100% {
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+      }
+
+      @keyframes fxGrid {
+        0% {
+          transform: translate3d(0, 0, 0);
+        }
+        100% {
+          transform: translate3d(-26px, -26px, 0);
+        }
+      }
+
+      @keyframes fxScan {
+        0% {
+          transform: translateY(-30%);
+        }
+        50% {
+          transform: translateY(30%);
+        }
+        100% {
+          transform: translateY(-30%);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .fx-aurora,
+        .fx-grid,
+        .fx-scan,
+        .sp_loaded .fx-in,
+        .sp_loaded .fx-card {
+          animation: none !important;
+        }
+        .fx-in,
+        .fx-card {
+          opacity: 1;
+          transform: none;
+          filter: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="h-full bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-50">
+    <div class="fx-bg" aria-hidden="true">
+      <div class="fx-aurora"></div>
+      <div class="fx-grid"></div>
+      <div class="fx-scan"></div>
+    </div>
+
+    <div class="min-h-full fx-wrap">
+      <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/75 backdrop-blur dark:border-slate-800/70 dark:bg-slate-950/60">
+        <div class="mx-auto max-w-xl px-4 py-3">
+          <div class="flex items-center justify-between gap-3 fx-in">
+            <div class="min-w-0">
+              <h1 class="truncate text-base font-semibold tracking-tight">Tienda</h1>
+              <p class="truncate text-xs text-slate-600 dark:text-slate-400">Catálogo de precios</p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                id="openScan"
+                type="button"
+                class="hidden sm:inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+              >
+                Escanear
+              </button>
+              <button
+                id="openCart"
+                type="button"
+                class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+              >
+                Cuenta
+              </button>
+              <button
+                id="themeToggle"
+                type="button"
+                class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                aria-label="Cambiar tema"
+              >
+                Tema
+              </button>
+              <button
+                id="openAdd"
+                type="button"
+                class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 active:translate-y-px dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3 fx-in" style="animation-delay: 80ms">
+            <label class="relative block sm:col-span-2">
+              <span class="sr-only">Buscar</span>
+              <input
+                id="search"
+                type="search"
+                placeholder="Buscar producto o categoria..."
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none ring-0 placeholder:text-slate-400 focus:border-slate-300 focus:ring-4 focus:ring-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:placeholder:text-slate-500 dark:focus:border-slate-700 dark:focus:ring-slate-900"
+                autocomplete="off"
+              />
+            </label>
+
+            <label class="block">
+              <span class="sr-only">Ordenar</span>
+              <select
+                id="sort"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:focus:border-slate-700 dark:focus:ring-slate-900"
+              >
+                <option value="name_asc">Nombre (A-Z)</option>
+                <option value="price_asc">Precio (menor)</option>
+                <option value="price_desc">Precio (mayor)</option>
+                <option value="newest">Recientes</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </header>
+
+      <main class="mx-auto max-w-xl px-4 py-4 fx-in" style="animation-delay: 130ms">
+        <section class="mb-3">
+          <div class="grid grid-cols-2 gap-2">
+            <button
+              id="tabCatalog"
+              type="button"
+              class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+            >
+              Catalogo
+            </button>
+            <button
+              id="tabCart"
+              type="button"
+              class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+            >
+              Cuenta
+            </button>
+          </div>
+        </section>
+
+        <section id="catalogView">
+        <section class="mb-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-xs text-slate-600 dark:text-slate-400">
+              <span id="count">0</span> productos
+            </div>
+            <button
+              id="clearAll"
+              type="button"
+              class="rounded-xl border border-transparent px-3 py-2 text-xs font-medium text-slate-600 hover:border-slate-200 hover:bg-white active:translate-y-px dark:text-slate-300 dark:hover:border-slate-800 dark:hover:bg-slate-900"
+            >
+              Limpiar
+            </button>
+          </div>
+        </section>
+
+        <section id="empty" class="hidden">
+          <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft dark:border-slate-800 dark:bg-slate-900">
+            <h2 class="text-sm font-semibold">Tu lista esta vacia</h2>
+            <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">
+              Agrega productos para tener un catalogo rapido de precios.
+            </p>
+            <button
+              id="emptyAdd"
+              type="button"
+              class="mt-4 inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 active:translate-y-px dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+            >
+              Agregar primer producto
+            </button>
+          </div>
+        </section>
+
+        <section id="list" class="grid grid-cols-1 gap-3"></section>
+        </section>
+
+        <section id="cartView" class="hidden">
+          <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-soft dark:border-slate-800 dark:bg-slate-900">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <h2 class="truncate text-sm font-semibold">Cuenta</h2>
+                <p class="mt-0.5 text-xs text-slate-600 dark:text-slate-400">Escanea o agrega para sumar.</p>
+              </div>
+              <button
+                id="scanInCart"
+                type="button"
+                class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 active:translate-y-px dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+              >
+                Escanear
+              </button>
+            </div>
+
+            <div id="cartEmpty" class="mt-3 hidden rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200">
+              No hay items. Usa “Escanear” o agrega desde el catalogo.
+            </div>
+
+            <div id="cartList" class="mt-3 grid grid-cols-1 gap-2"></div>
+
+            <div class="mt-4 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-950">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-slate-600 dark:text-slate-300">Total</span>
+                <span id="cartTotal" class="text-lg font-semibold tracking-tight">$0.00</span>
+              </div>
+              <div class="mt-3 grid grid-cols-2 gap-2">
+                <button
+                  id="clearCart"
+                  type="button"
+                  class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+                >
+                  Vaciar
+                </button>
+                <button
+                  id="checkoutCopy"
+                  type="button"
+                  class="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 active:translate-y-px dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                >
+                  Copiar
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- FAB (mobile) -->
+    <button
+      id="fab"
+      type="button"
+      class="fixed bottom-5 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-soft hover:bg-slate-800 active:translate-y-px dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 sm:hidden"
+      aria-label="Agregar producto"
+    >
+      <span class="text-2xl leading-none">+</span>
+    </button>
+
+    <!-- Scanner FAB (mobile) -->
+    <button
+      id="scanFab"
+      type="button"
+      class="fixed bottom-5 left-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-soft hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-900 dark:text-slate-50 dark:hover:bg-slate-800 sm:hidden"
+      aria-label="Escanear codigo"
+    >
+      <span class="text-xl leading-none">▦</span>
+    </button>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 z-50 hidden">
+      <div id="backdrop" class="absolute inset-0 bg-slate-950/50 backdrop-blur-sm"></div>
+      <div class="relative mx-auto flex min-h-full max-w-xl items-end px-4 py-5 sm:items-center">
+        <div class="w-full rounded-3xl border border-slate-200 bg-white p-4 shadow-soft dark:border-slate-800 dark:bg-slate-900">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h2 id="modalTitle" class="truncate text-sm font-semibold">Agregar producto</h2>
+              <p class="mt-0.5 text-xs text-slate-600 dark:text-slate-400">Solo para mostrar precios.</p>
+            </div>
+            <button
+              id="closeModal"
+              type="button"
+              class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900"
+            >
+              Cerrar
+            </button>
+          </div>
+
+          <form id="productForm" class="mt-4 grid grid-cols-1 gap-3">
+            <input type="hidden" id="editingId" />
+
+            <label class="grid gap-1">
+              <span class="text-xs font-medium text-slate-700 dark:text-slate-200">Nombre</span>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                inputmode="text"
+                maxlength="80"
+                required
+                placeholder="Ej: Camisa Polo"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none placeholder:text-slate-400 focus:border-slate-300 focus:ring-4 focus:ring-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:border-slate-700 dark:focus:ring-slate-900"
+              />
+            </label>
+
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <label class="grid gap-1">
+                <span class="text-xs font-medium text-slate-700 dark:text-slate-200">Precio</span>
+                <input
+                  id="price"
+                  name="price"
+                  type="number"
+                  inputmode="decimal"
+                  step="0.01"
+                  min="0"
+                  required
+                  placeholder="0.00"
+                  class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none placeholder:text-slate-400 focus:border-slate-300 focus:ring-4 focus:ring-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:border-slate-700 dark:focus:ring-slate-900"
+                />
+              </label>
+
+              <label class="grid gap-1">
+                <span class="text-xs font-medium text-slate-700 dark:text-slate-200">Categoria</span>
+                <input
+                  id="category"
+                  name="category"
+                  type="text"
+                  inputmode="text"
+                  maxlength="40"
+                  placeholder="Ej: Ropa"
+                  class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none placeholder:text-slate-400 focus:border-slate-300 focus:ring-4 focus:ring-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:border-slate-700 dark:focus:ring-slate-900"
+                />
+              </label>
+            </div>
+
+            <label class="grid gap-1">
+              <span class="text-xs font-medium text-slate-700 dark:text-slate-200">Codigo de barras (opcional)</span>
+              <input
+                id="barcode"
+                name="barcode"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                maxlength="32"
+                placeholder="Ej: 7501234567890"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none placeholder:text-slate-400 focus:border-slate-300 focus:ring-4 focus:ring-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:border-slate-700 dark:focus:ring-slate-900"
+              />
+            </label>
+
+            <label class="grid gap-1">
+              <span class="text-xs font-medium text-slate-700 dark:text-slate-200">Nota (opcional)</span>
+              <input
+                id="note"
+                name="note"
+                type="text"
+                inputmode="text"
+                maxlength="120"
+                placeholder="Ej: Tallas S a XL"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none placeholder:text-slate-400 focus:border-slate-300 focus:ring-4 focus:ring-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:border-slate-700 dark:focus:ring-slate-900"
+              />
+            </label>
+
+            <div class="mt-1 grid grid-cols-2 gap-2">
+              <button
+                id="saveBtn"
+                type="submit"
+                class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 active:translate-y-px dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+              >
+                Guardar
+              </button>
+              <button
+                id="resetBtn"
+                type="button"
+                class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-900"
+              >
+                Limpiar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scanner Modal -->
+    <div id="scanModal" class="fixed inset-0 z-[70] hidden">
+      <div id="scanBackdrop" class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"></div>
+      <div class="relative mx-auto flex min-h-full max-w-xl items-end px-4 py-5 sm:items-center">
+        <div class="w-full overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-soft dark:border-slate-800 dark:bg-slate-900">
+          <div class="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3 dark:border-slate-800">
+            <div class="min-w-0">
+              <h2 class="truncate text-sm font-semibold">Escanear codigo</h2>
+              <p id="scanHint" class="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-400">
+                Apunta la camara al codigo de barras.
+              </p>
+            </div>
+            <button
+              id="closeScan"
+              type="button"
+              class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900"
+            >
+              Cerrar
+            </button>
+          </div>
+
+          <div class="relative bg-slate-950">
+            <video id="scanVideo" class="h-[55vh] w-full object-cover" playsinline muted></video>
+            <div class="pointer-events-none absolute inset-0">
+              <div class="absolute left-1/2 top-1/2 h-44 w-72 -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-cyan-300/70 shadow-[0_0_0_9999px_rgba(2,6,23,0.55)]"></div>
+              <div class="absolute left-1/2 top-1/2 h-44 w-72 -translate-x-1/2 -translate-y-1/2 rounded-3xl shadow-[0_0_50px_rgba(34,211,238,0.22)]"></div>
+            </div>
+          </div>
+
+          <div class="grid gap-2 px-4 py-4">
+            <div class="grid grid-cols-2 gap-2">
+              <button
+                id="startScan"
+                type="button"
+                class="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 active:translate-y-px dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+              >
+                Iniciar
+              </button>
+              <button
+                id="stopScan"
+                type="button"
+                class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-900"
+              >
+                Detener
+              </button>
+            </div>
+
+            <div class="mt-1 grid grid-cols-1 gap-2">
+              <label class="grid gap-1">
+                <span class="text-xs font-medium text-slate-700 dark:text-slate-200">Codigo manual</span>
+                <input
+                  id="manualBarcode"
+                  type="text"
+                  inputmode="numeric"
+                  placeholder="Escribe o pega un codigo"
+                  class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none placeholder:text-slate-400 focus:border-slate-300 focus:ring-4 focus:ring-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:border-slate-700 dark:focus:ring-slate-900"
+                />
+              </label>
+              <button
+                id="useManualBarcode"
+                type="button"
+                class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-900"
+              >
+                Usar codigo
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="pointer-events-none fixed left-0 right-0 top-3 z-[60] hidden">
+      <div class="mx-auto max-w-xl px-4">
+        <div class="pointer-events-auto inline-flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-soft dark:border-slate-800 dark:bg-slate-900">
+          <div id="toastText" class="min-w-0 truncate"></div>
+          <button
+            id="toastClose"
+            type="button"
+            class="shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 active:translate-y-px dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900"
+          >
+            Ok
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
