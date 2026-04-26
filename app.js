@@ -677,8 +677,10 @@
     openModal("add");
   });
 
-  const openScanFromAnywhere = () => {
+  const openScanFromAnywhere = async () => {
     openScanModal();
+    // Try to start immediately (still requires browser permission).
+    await startScan();
   };
   els.openScan.addEventListener("click", openScanFromAnywhere);
   els.scanInCart.addEventListener("click", openScanFromAnywhere);
